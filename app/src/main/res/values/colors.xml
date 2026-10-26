@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="desk">#CDBB95</color>
+    <color name="parchment">#F2E7CD</color>
+    <color name="ink">#2C2015</color>
+    <color name="muted">#6B583F</color>
+    <color name="rule">#8E7651</color>
+    <color name="accent">#8E2F25</color>
+    <color name="on_accent">#F6EBD3</color>
+    <color name="gold">#A87A1F</color>
+    <color name="track">#E2D3AE</color>
+</resources>

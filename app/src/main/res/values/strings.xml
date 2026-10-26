@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Đảo Ví</string>
+    <string name="listener_label">Đảo Ví nghe điện tín ngân hàng</string>
+    <string name="widget_label">Hải đồ Đảo Ví</string>
+    <string name="widget_desc">Ngân sách tháng, cấp đảo và kho vàng ngay trên màn hình chính</string>
+</resources>
