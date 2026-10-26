@@ -6,25 +6,50 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-java@v4
+      - name: Tìm thư mục dự án
+        id: proj
+        run: |
+          if [ -f settings.gradle.kts ]; then echo "dir=." >> "$GITHUB_OUTPUT"
+          elif [ -f DaoVi/settings.gradle.kts ]; then echo "dir=DaoVi" >> "$GITHUB_OUTPUT"
+          else echo "::error::Không thấy settings.gradle.kts"; ls -la; exit 1; fi
+
+      - name: Kiểm tra file quan trọng
+        working-directory: ${{ steps.proj.outputs.dir }}
+        run: |
+          for f in build.gradle.kts app/build.gradle.kts app/daovi.keystore app/src/main/AndroidManifest.xml app/src/main/assets/www/index.html; do
+            if [ -f "$f" ]; then echo "Có: $f"; else echo "::error::Thiếu file $f"; MISSING=1; fi
+          done
+          [ -z "$MISSING" ]
+
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "17"
 
-      - uses: android-actions/setup-android@v3
+      - name: Chuẩn bị Android SDK
+        run: |
+          echo "ANDROID_HOME=$ANDROID_HOME"
+          SDKM="$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager"
+          if [ -x "$SDKM" ]; then
+            yes | "$SDKM" --licenses > /dev/null || true
+            "$SDKM" "platforms;android-34" "build-tools;34.0.0" || true
+          else
+            echo "Không thấy sdkmanager, để Gradle tự tải"
+          fi
 
       - uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: "8.7"
 
       - name: Build debug APK
+        working-directory: ${{ steps.proj.outputs.dir }}
         run: gradle :app:assembleDebug --no-daemon --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: DaoVi-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
+          path: "**/app/build/outputs/apk/debug/app-debug.apk"
